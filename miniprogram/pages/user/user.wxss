@@ -1,0 +1,62 @@
+.user-header {
+  background-color: #1890ff;
+  padding: 40rpx;
+  display: flex;
+  align-items: center;
+}
+
+.user-header--left {
+  display: flex;
+  align-items: center;
+}
+
+.user-header--left .avatar {
+  width: 150rpx;
+  height: 150rpx;
+  background-color: #ccc;
+  border-radius: 50%;
+  flex: 0 0 150rpx;
+}
+
+.user-header--left .name {
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: 600;
+  margin-left: 20rpx;
+}
+
+.user-header--button {
+  color: #fff;
+  border: 2rpx solid #fff;
+  width: 280rpx!important;
+  font-size: 32rpx;
+  margin-left: 20rpx;
+  box-sizing: border-box;
+}
+
+.user-bar {
+  margin-bottom: 20rpx;
+}
+
+.user-bar-item {
+  padding: 40rpx;
+  background-color: #1890ff;
+  color: #fff;
+  margin: 40rpx 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-bar-item--l {
+  display: flex;
+  align-items: center;
+}
+
+.user-bar-item--l .iconfont {
+  font-size: 38rpx;
+}
+
+.user-bar-item--l .text {
+  margin-left: 10rpx;
+}

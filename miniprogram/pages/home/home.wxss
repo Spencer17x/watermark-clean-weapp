@@ -1,0 +1,25 @@
+.home-video {
+  display: flex;
+  padding: 20rpx;
+  margin-bottom: 40rpx;
+}
+
+.home-video--url {
+  border: 1px solid #1890ff;
+  padding: 20rpx;
+  border-radius: 8rpx;
+  flex: 1;
+  margin-right: 20rpx;
+}
+
+.home-video--extract {
+  background-color: #1890ff;
+  color: #fff;
+  width: 160rpx!important;
+  flex: 180rpx 0 0;
+}
+
+.home .video-container {
+  display: flex;
+  justify-content: center;
+}

@@ -1,0 +1,21 @@
+<view class="home">
+  <view class="home-video">
+    <input 
+      class="home-video--url"
+      value="{{videoUrl}}" 
+      placeholder="请粘贴视频地址"
+      bindinput="inputVideoUrl"  
+    />
+    <button 
+      class="home-video--extract" 
+      bindtap="extractVideo"
+    >提取</button>
+  </view>
+  <view class="video-container">
+    <video 
+      wx:if="{{noWatermarkVideoUrl}}" 
+      src="{{noWatermarkVideoUrl}}"
+      autoplay="{{true}}"
+    ></video>
+  </view>
+</view>
