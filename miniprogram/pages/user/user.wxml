@@ -1,10 +1,20 @@
 <view class="user">
   <view class="user-header">
     <view class="user-header--left">
-      <view class="avatar"></view>
-      <view class="name">您好，欢迎使用去水印</view>
+      <image 
+          class="avatar" 
+          src="{{userInfo.avatarUrl}}" 
+          alt="" 
+          mode="aspectFit"
+        />
+      <view class="name">{{userInfo.name || '您好，欢迎使用去水印'}}</view>
     </view>
-    <button class="user-header--button">登录/注册</button>
+    <button 
+      class="user-header--button"
+      open-type="getUserInfo"
+      bindgetuserinfo="onGetUserInfo"
+      wx:if="{{!openid}}"
+    >登录/注册</button>
   </view>
 
   <view class="user-bar">

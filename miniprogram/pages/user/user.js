@@ -1,11 +1,30 @@
 // miniprogram/pages/user/user.js
+import { cloudRequest } from '../../api/request'
+
+const app = getApp();
+
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
+    userInfo: {},
+    openid: ''
+  },
 
+  async onGetUserInfo(e) {
+    const res = await cloudRequest('login');
+    const { openid } = res;
+    const { userInfo } = e.detail;
+    app.globalData.userInfo = userInfo;
+    app.globalData.openid = res.openid;
+    wx.setStorageSync('openid', openid);
+    wx.setStorageSync('userInfo', userInfo);
+    this.setData({
+      userInfo,
+      openid
+    });
   },
 
   /**
@@ -26,7 +45,10 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-
+    this.setData({
+      openid: app.globalData.openid,
+      userInfo: app.globalData.userInfo,
+    })
   },
 
   /**

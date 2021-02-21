@@ -1,5 +1,15 @@
 //app.js
 App({
+  globalData: {
+    userInfo: {},
+    openid: ''
+  },
+  onShow: function() {
+    const openid = wx.getStorageSync('openid');
+    const userInfo = wx.getStorageSync('userInfo');
+    this.globalData.openid = openid;
+    this.globalData.userInfo = userInfo;
+  },
   onLaunch: function () {
     if (!wx.cloud) {
       console.error('请使用 2.2.3 或以上的基础库以使用云能力')
@@ -11,6 +21,7 @@ App({
         //   如不填则使用默认环境（第一个创建的环境）
         // env: 'my-env-id',
         traceUser: true,
+        env: 'watermark-clean-6ghs16f9b4f0ff82'
       })
     }
 

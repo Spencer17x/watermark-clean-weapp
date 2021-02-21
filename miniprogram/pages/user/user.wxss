@@ -8,6 +8,7 @@
 .user-header--left {
   display: flex;
   align-items: center;
+  flex: 0 0 420rpx;
 }
 
 .user-header--left .avatar {

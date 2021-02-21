@@ -1,4 +1,4 @@
-import request from '../../api/request';
+import { apiRequest } from '../../api/request';
 
 // 抖音平台测试链接：
 // https://v.douyin.com/JEWbnGg/
@@ -27,7 +27,7 @@ Page({
    */
   async extractVideo() {
     const { videoUrl } = this.data;
-    const res = await request('/dy', {
+    const res = await apiRequest('/dy', {
       url: videoUrl
     });
     const { noWatermarkVideoUrl } = res.data;
