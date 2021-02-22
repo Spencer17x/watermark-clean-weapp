@@ -4,8 +4,10 @@
  * @param {*} data 
  * @param {*} method 
  */
-const apiRequest = (url, data, method = 'get',) => {
-  const baseUrl = 'http://localhost:3000';
+const apiRequest = (
+  url, data, method = 'get', 
+  baseUrl = 'http://qsy.xiaofany.com'
+) => {
   wx.showLoading({
     title: '加载中...',
   })
@@ -15,9 +17,16 @@ const apiRequest = (url, data, method = 'get',) => {
       method,
       data,
       success(res) {
-        if (res.statusCode === 200) {
+        if (
+          res.statusCode === 200 && 
+          res.data.code === 200 && 
+          baseUrl === 'http://qsy.xiaofany.com'
+        ) {
+          resolve(res.data.data);
+        } else if (res.statusCode === 200) {
           resolve(res.data);
         } else {
+          console.log('reject', res);
           reject(res);
         }
       },

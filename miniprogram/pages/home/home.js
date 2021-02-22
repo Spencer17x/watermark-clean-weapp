@@ -1,4 +1,5 @@
-import { cloudRequest } from '../../api/request';
+import { apiRequest } from '../../api/request';
+import { mySign } from '../../utils/sign';
 
 const app = getApp();
 
@@ -51,18 +52,27 @@ Page({
       });
       return;
     }
-    if (!videoUrl.startsWith('https://v.douyin.com')) {
-      wx.showToast({
-        title: '抱歉，目前仅支持抖音链接',
-        icon: 'none'
-      });
-      return;
-    }
-    const { noWatermarkVideoUrl } = await cloudRequest('douyin', {
-      url: videoUrl
-    });
+    const { token } = await apiRequest('/api/getToken', {}, 'POST');
+    const cityRes = await apiRequest('/cityjson', {
+      ie: 'utf-8',
+    }, 'GET', 'https://pv.sohu.com');
+    const cityArr = cityRes.split(' ');
+    const returnCitySN = {
+      cip: cityArr[4].replace('"', '').replace('",', ''),
+      cid: cityArr[6].replace('"', '').replace('",', ''),
+      cname: cityArr[8].replace('"', '').replace('"};', '')
+    };
+    console.log(returnCitySN);
+    const t = new Date().getTime();
+    const sign = mySign(videoUrl, t, token, returnCitySN);
+    const res = await apiRequest('/api/analyze', {
+      token,
+      url: videoUrl,
+      t,
+      sign
+    }, 'POST');
     this.setData({
-      noWatermarkVideoUrl
+      noWatermarkVideoUrl: res.video
     });
   },
 
