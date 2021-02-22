@@ -21,5 +21,15 @@
 
 .home .video-container {
   display: flex;
-  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.home .video-container .video {
+  margin-bottom: 40rpx;
+}
+
+.home .video-container .button {
+  background-color: #1890ff;
+  color: #fff;
 }

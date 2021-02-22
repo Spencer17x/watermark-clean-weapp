@@ -1,4 +1,6 @@
-import { apiRequest } from '../../api/request';
+import { cloudRequest } from '../../api/request';
+
+const app = getApp();
 
 // 抖音平台测试链接：
 // https://v.douyin.com/JEWbnGg/
@@ -26,14 +28,84 @@ Page({
    * 点击提取视频
    */
   async extractVideo() {
+    const { openid } = app.globalData;
     const { videoUrl } = this.data;
-    const res = await apiRequest('/dy', {
+    if (!openid) {
+      wx.showModal({
+        title: '提示',
+        content: '当前状态未登录，请点击确认去登录',
+        success(res) {
+          if (res.confirm) {
+            wx.switchTab({
+              url: '/pages/user/user',
+            });
+          }
+        }
+      })
+      return;
+    }
+    if (!videoUrl) {
+      wx.showToast({
+        title: '请输入视频地址',
+        icon: 'none'
+      });
+      return;
+    }
+    if (!videoUrl.startsWith('https://v.douyin.com')) {
+      wx.showToast({
+        title: '抱歉，目前仅支持抖音链接',
+        icon: 'none'
+      });
+      return;
+    }
+    const { noWatermarkVideoUrl } = await cloudRequest('douyin', {
       url: videoUrl
     });
-    const { noWatermarkVideoUrl } = res.data;
     this.setData({
       noWatermarkVideoUrl
+    });
+  },
+
+  async save() {
+    const filePath = await this.downloadVideo(this.data.noWatermarkVideoUrl);
+    const res = await this.saveVideo(filePath);
+    console.log(res);
+  },
+
+  /**
+   * 把视频下载到本地
+   * @param {*} url 
+   */
+  downloadVideo(url) {
+    return new Promise((resolve, reject) => {
+      wx.downloadFile({
+        url,
+        success(res) {
+          if (res.statusCode === 200) {
+            resolve(res.tempFilePath)
+          } else {
+            reject(res);
+          }
+        },
+        fail(err) {
+          reject(err);
+        }
+      })
     })
+  },
+
+  saveVideo(filePath) {
+    return new Promise((resolve, reject) => {
+      wx.saveVideoToPhotosAlbum({
+        filePath,
+        success(res) {
+          resolve(res)
+        },
+        fail(err) {
+          reject(err);
+        }
+      })
+    });
   },
 
   /**

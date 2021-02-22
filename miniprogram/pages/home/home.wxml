@@ -11,11 +11,18 @@
       bindtap="extractVideo"
     >提取</button>
   </view>
-  <view class="video-container">
+  <view 
+    class="video-container" 
+    wx:if="{{noWatermarkVideoUrl}}" 
+  >
     <video 
-      wx:if="{{noWatermarkVideoUrl}}" 
       src="{{noWatermarkVideoUrl}}"
       autoplay="{{true}}"
+      class="video"
     ></video>
+    <button 
+      class="button" 
+      bindtap="save"
+    >保存</button>
   </view>
 </view>
