@@ -30,9 +30,10 @@ async function runDouyin(shareUrl) {
 	const { responseUrl } = response.request.res;
 	const id = responseUrl.match(/\/video\/[0-9]*/)[0].replace('/video/', '');
 	const videoRes = await request(`https://www.iesdouyin.com/web/api/v2/aweme/iteminfo/?item_ids=${id}`);
-	const noWatermarkVideoUrl = videoRes.data.item_list[0].video.play_addr.url_list[0].replace('playwm', 'play');
+	const baseNoWatermarkVideoUrl = videoRes.data.item_list[0].video.play_addr.url_list[0].replace('playwm', 'play');
 	const shareTitle = videoRes.data.item_list[0].share_info.share_title;
-	// const { data: videoStream } = await request(noWatermarkVideoUrl, 'stream');
+	const res = await request(baseNoWatermarkVideoUrl);
+	const noWatermarkVideoUrl = res.request.res.responseUrl;
 	return { noWatermarkVideoUrl, shareTitle };
 }
 

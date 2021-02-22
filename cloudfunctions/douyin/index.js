@@ -12,8 +12,6 @@ exports.main = async (event, context) => {
 
   const { noWatermarkVideoUrl, shareTitle } = await runDouyin(url);
   
-  
-
   return {
     noWatermarkVideoUrl,
     shareTitle

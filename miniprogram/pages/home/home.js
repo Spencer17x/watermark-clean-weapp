@@ -11,7 +11,7 @@ Page({
    * 页面的初始数据
    */
   data: {
-    videoUrl: '',
+    videoUrl: 'https://v.douyin.com/JEWbnGg/',
     noWatermarkVideoUrl: ''
   },
 
