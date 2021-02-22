@@ -66,10 +66,28 @@ Page({
     });
   },
 
+  // 点击保存按钮
   async save() {
-    const filePath = await this.downloadVideo(this.data.noWatermarkVideoUrl);
-    const res = await this.saveVideo(filePath);
-    console.log(res);
+    try {
+      const filePath = await this.downloadVideo(this.data.noWatermarkVideoUrl);
+      const res = await this.saveVideo(filePath);
+      if (res.errMsg === 'saveVideoToPhotosAlbum:ok') {
+        wx.showToast({
+          title: '保存成功',
+          icon: 'none'
+        });
+      } else {
+        wx.showToast({
+          title: 'saveVideoToPhotosAlbum error',
+          icon: 'none'
+        });
+      }
+    } catch(err) {
+      wx.showToast({
+        title: JSON.stringify(err),
+        icon: 'none'
+      })
+    }
   },
 
   /**
@@ -78,11 +96,13 @@ Page({
    */
   downloadVideo(url) {
     return new Promise((resolve, reject) => {
+      const fileName = new Date().valueOf();
       wx.downloadFile({
         url,
+        filePath: wx.env.USER_DATA_PATH + '/' + fileName + '.mp4',
         success(res) {
           if (res.statusCode === 200) {
-            resolve(res.tempFilePath)
+            resolve(res.filePath)
           } else {
             reject(res);
           }
@@ -94,6 +114,10 @@ Page({
     })
   },
 
+  /**
+   * 保存视频
+   * @param {*} filePath 
+   */
   saveVideo(filePath) {
     return new Promise((resolve, reject) => {
       wx.saveVideoToPhotosAlbum({
