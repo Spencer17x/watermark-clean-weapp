@@ -1,4 +1,4 @@
-import { apiRequest } from '../../api/request';
+import { cloudRequest } from '../../api/request';
 import { mySign } from '../../utils/sign';
 
 const app = getApp();
@@ -12,7 +12,7 @@ Page({
    * 页面的初始数据
    */
   data: {
-    videoUrl: '',
+    videoUrl: 'https://v.douyin.com/JEWbnGg/',
     noWatermarkVideoUrl: ''
   },
 
@@ -52,28 +52,10 @@ Page({
       });
       return;
     }
-    const { token } = await apiRequest('/api/getToken', {}, 'POST');
-    const cityRes = await apiRequest('/cityjson', {
-      ie: 'utf-8',
-    }, 'GET', 'https://pv.sohu.com');
-    const cityArr = cityRes.split(' ');
-    const returnCitySN = {
-      cip: cityArr[4].replace('"', '').replace('",', ''),
-      cid: cityArr[6].replace('"', '').replace('",', ''),
-      cname: cityArr[8].replace('"', '').replace('"};', '')
-    };
-    console.log(returnCitySN);
-    const t = new Date().getTime();
-    const sign = mySign(videoUrl, t, token, returnCitySN);
-    const res = await apiRequest('/api/analyze', {
-      token,
-      url: videoUrl,
-      t,
-      sign
-    }, 'POST');
-    this.setData({
-      noWatermarkVideoUrl: res.video
+    const res = await cloudRequest('watermark-clean', {
+      videoUrl
     });
+    
   },
 
   // 点击保存按钮
