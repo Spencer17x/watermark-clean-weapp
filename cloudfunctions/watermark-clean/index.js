@@ -1,6 +1,4 @@
 // 云函数入口文件
-const fs = require('fs');
-const path = require('path');
 const cloud = require('wx-server-sdk')
 const axios = require('axios')
 const { mySign } = require('./sign')
@@ -74,40 +72,20 @@ exports.main = async (event, context) => {
     },
     method: 'post'
   });
-
-  const { data: videoStream } = await request({
+  // videoRes.data.data.video
+  const { data: videoBuffer } = await request({
     url: videoRes.data.data.video,
-    responseType: 'stream'
+    responseType: 'arraybuffer'
   });
 
   const now = Date.now();
-  const fileWriteStream = fs.createWriteStream(path.join(__dirname, `./video/${now}.mp4`));
-  await new Promise((resolve, reject) => {
-    videoStream
-    .pipe(fileWriteStream)
-    .on("close", function (err) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve('ok');
-      }
-    });
-  });
-  const fileStream = fs.createReadStream(path.join(__dirname, `./video/${now}.mp4`))
   const res = await cloud.uploadFile({
-    fileContent: fileStream,
+    fileContent: videoBuffer,
     cloudPath: `${now}.mp4`,
     config: {
       env: 'watermark-clean-6ghs16f9b4f0ff82'
     }
   });
 
-  console.log('res', res)
-  
-  return {
-    event,
-    openid: wxContext.OPENID,
-    appid: wxContext.APPID,
-    unionid: wxContext.UNIONID,
-  }
+  return res
 }

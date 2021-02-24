@@ -1,5 +1,4 @@
 import { cloudRequest } from '../../api/request';
-import { mySign } from '../../utils/sign';
 
 const app = getApp();
 
@@ -55,7 +54,12 @@ Page({
     const res = await cloudRequest('watermark-clean', {
       videoUrl
     });
-    
+
+    this.setData({
+      noWatermarkVideoUrl: res.fileID
+    })
+
+    console.log(res)
   },
 
   // 点击保存按钮
