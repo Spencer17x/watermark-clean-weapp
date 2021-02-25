@@ -1,4 +1,5 @@
-import { cloudRequest } from '../../api/request';
+import { apiRequest, cloudRequest } from '../../api/request';
+import { mySign } from '../../utils/sign'
 
 const app = getApp();
 
@@ -11,7 +12,7 @@ Page({
    * 页面的初始数据
    */
   data: {
-    videoUrl: 'https://v.douyin.com/JEWbnGg/',
+    videoUrl: '',
     noWatermarkVideoUrl: ''
   },
 
@@ -51,21 +52,48 @@ Page({
       });
       return;
     }
-    const res = await cloudRequest('watermark-clean', {
-      videoUrl
+    // 获取去水印解析视频的token
+    const tokenRes = await apiRequest({
+      url: '/api/getToken',
+      method: 'post'
     });
+    const { token } = tokenRes;
 
+    // 获取解析接口所需的returnCitySN
+    const cityRes = await apiRequest({
+      baseUrl: 'https://pv.sohu.com',
+      url: '/cityjson?ie=utf-8',
+    });
+    const cityArr = cityRes.split(' ');
+    const returnCitySN = {
+      cip: cityArr[4].replace('"', '').replace('",', ''),
+      cid: cityArr[6].replace('"', '').replace('",', ''),
+      cname: cityArr[8].replace('"', '').replace('"};', '')
+    };
+    const t = new Date().getTime();
+    const sign = mySign(videoUrl, t, token, returnCitySN);
+    // 解析并去水印
+    const videoRes = await apiRequest({
+      url: '/api/analyze',
+      data: {
+        token,
+        url: videoUrl,
+        t,
+        sign
+      },
+      method: 'post'
+    });
     this.setData({
-      noWatermarkVideoUrl: res.fileID
+      noWatermarkVideoUrl: videoRes.video
     })
-
-    console.log(res)
   },
 
   // 点击保存按钮
   async save() {
     try {
-      const filePath = await this.downloadVideo(this.data.noWatermarkVideoUrl);
+      const { noWatermarkVideoUrl } = this.data;
+      const videoUrl = noWatermarkVideoUrl.startsWith('https') ? noWatermarkVideoUrl : noWatermarkVideoUrl.replace('http', 'https')
+      const filePath = await this.downloadVideo(videoUrl);
       const res = await this.saveVideo(filePath);
       if (res.errMsg === 'saveVideoToPhotosAlbum:ok') {
         wx.showToast({
