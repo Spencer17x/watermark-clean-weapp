@@ -22,7 +22,7 @@
     ></video>
     <button 
       class="button" 
-      bindtap="save"
-    >保存</button>
+      bindtap="copyUrl"
+    >复制链接</button>
   </view>
 </view>

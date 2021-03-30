@@ -1,4 +1,5 @@
-import { cloudRequest } from '../../api/request';
+import { apiRequest } from '../../api/request';
+import { mySign } from '../../utils/sign'
 
 const app = getApp();
 
@@ -11,7 +12,7 @@ Page({
    * 页面的初始数据
    */
   data: {
-    videoUrl: 'https://v.douyin.com/JEWbnGg/',
+    videoUrl: '',
     noWatermarkVideoUrl: ''
   },
 
@@ -24,10 +25,8 @@ Page({
     this.setData({videoUrl});
   },
 
-  /**
-   * 点击提取视频
-   */
-  async extractVideo() {
+  // 检验参数
+  validate() {
     const { openid } = app.globalData;
     const { videoUrl } = this.data;
     if (!openid) {
@@ -42,97 +41,80 @@ Page({
           }
         }
       })
-      return;
+      return 0;
     }
     if (!videoUrl) {
       wx.showToast({
         title: '请输入视频地址',
         icon: 'none'
       });
-      return;
+      return 0;
     }
-    const res = await cloudRequest('watermark-clean', {
-      videoUrl
-    });
-
-    this.setData({
-      noWatermarkVideoUrl: res.fileID
-    })
-
-    console.log(res)
   },
 
-  // 点击保存按钮
-  async save() {
+  /**
+   * 点击提取视频
+   */
+  async extractVideo() {
     try {
-      const filePath = await this.downloadVideo(this.data.noWatermarkVideoUrl);
-      const res = await this.saveVideo(filePath);
-      if (res.errMsg === 'saveVideoToPhotosAlbum:ok') {
-        wx.showToast({
-          title: '保存成功',
-          icon: 'none'
-        });
-      } else {
-        wx.showToast({
-          title: 'saveVideoToPhotosAlbum error',
-          icon: 'none'
-        });
-      }
+      const { videoUrl } = this.data;
+      const validateCode = this.validate();
+      if (validateCode === 0) return; 
+      const { data: { token } } = await apiRequest({
+        url: '/api/getToken',
+        method: 'post'
+      });
+      const cityRes = await apiRequest({
+        url: '/cityjson',
+        data: {
+          id: 'utf-8'
+        },
+        baseUrl: 'https://pv.sohu.com' 
+      });
+      const cityArr = cityRes.split(' ');
+      const returnCitySN = {
+        cip: cityArr[4].replace('"', '').replace('",', ''),
+        cid: cityArr[6].replace('"', '').replace('",', ''),
+        cname: cityArr[8].replace('"', '').replace('"};', '')
+      };
+      const t = new Date().getTime();
+      const sign = mySign(videoUrl, t, token, returnCitySN);
+      // 解析并去水印
+      const { data: videoRes } = await apiRequest({
+        url: '/api/analyze',
+        data: {
+          token,
+          url: videoUrl,
+          t,
+          sign
+        },
+        method: 'post'
+      });
+      this.setData({
+        noWatermarkVideoUrl: videoRes.video
+      })
     } catch(err) {
       wx.showToast({
-        title: JSON.stringify(err),
+        title: err,
         icon: 'none'
       })
     }
   },
 
-  /**
-   * 把视频下载到本地
-   * @param {*} url 
-   */
-  downloadVideo(url) {
-    return new Promise((resolve, reject) => {
-      const fileName = new Date().valueOf();
-      wx.downloadFile({
-        url,
-        filePath: wx.env.USER_DATA_PATH + '/' + fileName + '.mp4',
-        success(res) {
-          if (res.statusCode === 200) {
-            resolve(res.filePath)
-          } else {
-            reject(res);
-          }
-        },
-        fail(err) {
-          reject(err);
-        }
-      })
+  copyUrl() {
+    wx.setClipboardData({
+      data: this.data.noWatermarkVideoUrl,
+      success() {
+        wx.showToast({
+          title: '复制成功',
+        })
+      }
     })
   },
-
-  /**
-   * 保存视频
-   * @param {*} filePath 
-   */
-  saveVideo(filePath) {
-    return new Promise((resolve, reject) => {
-      wx.saveVideoToPhotosAlbum({
-        filePath,
-        success(res) {
-          resolve(res)
-        },
-        fail(err) {
-          reject(err);
-        }
-      })
-    });
-  },
-
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-
   },
 
   /**
