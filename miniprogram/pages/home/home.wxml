@@ -20,9 +20,16 @@
       autoplay="{{true}}"
       class="video"
     ></video>
-    <button 
-      class="button" 
-      bindtap="copyUrl"
-    >复制链接</button>
+    <view class="button-group">
+      <button 
+        class="button" 
+        bindtap="copyUrl"
+      >复制链接</button>
+      <button 
+        class="button" 
+        bindgetuserinfo="postSave"
+        openType="getUserInfo"
+      >保存到相册</button>
+    </view>
   </view>
 </view>

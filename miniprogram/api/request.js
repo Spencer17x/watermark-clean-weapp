@@ -22,7 +22,6 @@ const apiRequest = ({
         const isSucc = res.data.code ? 
           res.data.code === 200 : 
           res.statusCode == 200;
-        console.log(url, isSucc)
         if (isSucc) {
           resolve(res.data);
         } else {

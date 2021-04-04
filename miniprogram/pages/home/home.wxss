@@ -29,7 +29,13 @@
   margin-bottom: 40rpx;
 }
 
+.home .video-container .button-group {
+  display: flex;
+}
+
 .home .video-container .button {
+  width: 280rpx;
   background-color: #1890ff;
   color: #fff;
+  margin: auto 10rpx;
 }

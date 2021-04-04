@@ -2,7 +2,8 @@
 App({
   globalData: {
     userInfo: {},
-    openid: ''
+    openid: '',
+    downloadPrefix: 'https://sanqian.pro/download?url=',
   },
   onShow: function() {
     const openid = wx.getStorageSync('openid');
@@ -24,7 +25,5 @@ App({
         env: 'watermark-clean-6ghs16f9b4f0ff82'
       })
     }
-
-    this.globalData = {}
   }
 })

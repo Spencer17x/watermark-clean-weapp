@@ -1,7 +1,12 @@
-import { apiRequest } from '../../api/request';
-import { mySign } from '../../utils/sign'
+import {
+  apiRequest
+} from '../../api/request';
+import {
+  mySign
+} from '../../utils/sign'
 
 const app = getApp();
+let n = '';
 
 // 抖音平台测试链接：
 // https://v.douyin.com/JEWbnGg/
@@ -21,14 +26,22 @@ Page({
    * @param {} e 
    */
   inputVideoUrl(e) {
-    const { value: videoUrl } = e.detail;
-    this.setData({videoUrl});
+    const {
+      value: videoUrl
+    } = e.detail;
+    this.setData({
+      videoUrl
+    });
   },
 
   // 检验参数
   validate() {
-    const { openid } = app.globalData;
-    const { videoUrl } = this.data;
+    const {
+      openid
+    } = app.globalData;
+    const {
+      videoUrl
+    } = this.data;
     if (!openid) {
       wx.showModal({
         title: '提示',
@@ -57,10 +70,16 @@ Page({
    */
   async extractVideo() {
     try {
-      const { videoUrl } = this.data;
+      const {
+        videoUrl
+      } = this.data;
       const validateCode = this.validate();
-      if (validateCode === 0) return; 
-      const { data: { token } } = await apiRequest({
+      if (validateCode === 0) return;
+      const {
+        data: {
+          token
+        }
+      } = await apiRequest({
         url: '/api/getToken',
         method: 'post'
       });
@@ -69,7 +88,7 @@ Page({
         data: {
           id: 'utf-8'
         },
-        baseUrl: 'https://pv.sohu.com' 
+        baseUrl: 'https://pv.sohu.com'
       });
       const cityArr = cityRes.split(' ');
       const returnCitySN = {
@@ -80,7 +99,9 @@ Page({
       const t = new Date().getTime();
       const sign = mySign(videoUrl, t, token, returnCitySN);
       // 解析并去水印
-      const { data: videoRes } = await apiRequest({
+      const {
+        data: videoRes
+      } = await apiRequest({
         url: '/api/analyze',
         data: {
           token,
@@ -93,7 +114,7 @@ Page({
       this.setData({
         noWatermarkVideoUrl: videoRes.video
       })
-    } catch(err) {
+    } catch (err) {
       wx.showToast({
         title: err,
         icon: 'none'
@@ -101,6 +122,9 @@ Page({
     }
   },
 
+  /**
+   * 复制链接
+   */
   copyUrl() {
     wx.setClipboardData({
       data: this.data.noWatermarkVideoUrl,
@@ -111,11 +135,81 @@ Page({
       }
     })
   },
+
+  download: function () {
+    // 无法直接下载资源域下的资源，需要通过nginx中转一层
+    var t = this, e = app.globalData.downloadPrefix + t.data.noWatermarkVideoUrl;
+    wx.showLoading({
+      title: '保存中 0%'
+    }), (n = wx.downloadFile({
+      url: e,
+      success: function (o) {
+        wx.hideLoading(), wx.saveVideoToPhotosAlbum({
+          filePath: o.tempFilePath,
+          success: function (o) {
+            t.showToast('保存成功', 'success'), setTimeout(function () {
+              wx.setClipboardData({
+                data: '',
+              })
+              // t.goBack()
+            }, 1e3)
+          },
+          fail: function (o) {
+            t.showToast('保存失败')
+          }
+        })
+      },
+      fail: function (o) {
+        n = null, wx.hideLoading(), t.showToast('下载失败')
+      }
+    })).onProgressUpdate(function (o) {
+      100 === o.progress ? '' : wx.showLoading({
+        title: '保存中 ' + o.progress + '%'
+      })
+    })
+  },
+
+  postSave: function (o) {
+    var t = this;
+    wx.getSetting({
+      success: function (o) {
+        o.authSetting['scope.writePhotosAlbum'] ? t.download() : wx.authorize({
+          scope: 'scope.writePhotosAlbum',
+          success: function () {
+            t.download()
+          },
+          fail: function (o) {
+            wx.showModal({
+              title: '提示',
+              content: '视频保存到相册需获取相册权限请允许开启权限',
+              confirmText: '确认',
+              cancelText: '取消',
+              success: function (o) {
+                o.confirm ? (wx.openSetting({
+                  success: function (o) {}
+                })) : ''
+              }
+            })
+          }
+        })
+      }
+    })
+  },
+
+  showToast: function (o) {
+    var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 'none',
+      n = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : 1500
+    wx.showToast({
+      title: o,
+      icon: t,
+      duration: n
+    })
+  },
+
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
-  },
+  onLoad: function (options) {},
 
   /**
    * 生命周期函数--监听页面初次渲染完成
