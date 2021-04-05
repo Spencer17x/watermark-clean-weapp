@@ -1,4 +1,8 @@
 <view class="home">
+  <view class="home-header">
+    视频水印支持以下平台：抖音、西瓜、美拍、Tiiktok、小红书、微博、秒拍、小咖秀、晃咖、微视、全民小视频、全民K歌、美拍、哔哩哔哩、梨视频、网易云音乐、趣多拍、陌陌、Instagram、YouTube、Facebook、Twitter、Tumblr、映客、小影等平台的视频，去除后无任何痕迹，主要用于用户收藏自己喜欢视频。
+  </view>
+  <view class="home-prompt">服务器带宽较小，建议直接复制地址至浏览器下载</view>
   <view class="home-video">
     <input 
       class="home-video--url"

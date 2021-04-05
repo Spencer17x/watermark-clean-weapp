@@ -61,3 +61,16 @@
 .user-bar-item--l .text {
   margin-left: 10rpx;
 }
+
+.app-version {
+  text-align: center;
+  margin: 20rpx 0;
+  color: #868383;
+  font-size: 14px;
+}
+
+.contact-us {
+  background-color: #1890ff;
+  color: #fff;
+  width: 80%!important;
+}

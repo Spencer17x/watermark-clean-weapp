@@ -10,7 +10,8 @@ Page({
    */
   data: {
     userInfo: {},
-    openid: ''
+    openid: '',
+    version: '3.1.1'
   },
 
   async onGetUserInfo(e) {
@@ -31,7 +32,10 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-
+    const { miniProgram = {} } = wx.getAccountInfoSync();
+    this.setData({
+      version: miniProgram.version
+    });
   },
 
   /**

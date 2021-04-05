@@ -1,3 +1,24 @@
+.home {
+  padding-bottom: 80rpx;
+}
+
+.home-header {
+  padding: 20rpx;
+  background-color: #67c23a;
+  color: #fff;
+  line-height: 46rpx;
+}
+
+.home-header-image {
+  width: 100%;
+}
+
+.home-prompt {
+  margin-top: 20rpx;
+  text-align: center;
+  font-size: 14px;
+}
+
 .home-video {
   display: flex;
   padding: 20rpx;
